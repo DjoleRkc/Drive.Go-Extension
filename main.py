@@ -142,13 +142,10 @@ while running:
         draw_player()        
 
         # Check for collisions
-        if check_collision():
-            if player_velocity_y > 0:  # If player is moving down (jumping)
+        if check_collision() and player_velocity_y > 0:
                 player_velocity_y = JUMP_FORCE  # Bounce the player upward
-            else:
-                # Player touches the obstacle, trigger jump
-                player_velocity_y = JUMP_FORCE
-                is_jumping = True
+
+            
 
 
         # Remove off-screen obstacles

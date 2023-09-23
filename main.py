@@ -7,26 +7,31 @@ pygame.init()
 
 
 # Load the monkey emoji image
-player_image = pygame.image.load("images.jpeg")
-
+player_image = pygame.image.load("gorila_trci_1.png")
+obstacle_image = pygame.image.load('stepenik.png')
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 333, 600  # Adjust the dimensions to fit a vertical phone shape
-PLAYER_WIDTH, PLAYER_HEIGHT = 50, 50
-player_image = pygame.transform.scale(player_image, (50, 50))
-OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 50, 10
+SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 600  # Adjust the dimensions to fit a vertical phone shape
+PLAYER_WIDTH, PLAYER_HEIGHT = 100, 100
+player_image = pygame.transform.scale(player_image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+
+OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 60, 15
+obstacle_image = pygame.transform.scale(obstacle_image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+
 BG_COLOR = (255, 255, 255)  # Set background color to white
 GRAVITY = 1.5
 JUMP_FORCE = -15
-OBSTACLE_SPEED = 5
+OBSTACLE_SPEED = 8
 OBSTACLE_SPAWN_INTERVAL = 60
 OBSTACLE_COLOR = (255, 0, 0)  # Change obstacle color to red
 #MAX = 40 #izmeniti da bude customizable
 
+
+
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jumping Game")
-
-
+background_image = pygame.image.load("background.png")
+background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Player
 player_x = SCREEN_WIDTH // 7
@@ -52,7 +57,8 @@ def draw_player():
 
 def draw_obstacles():
     for obstacle in obstacles:
-        pygame.draw.rect(screen, OBSTACLE_COLOR, obstacle)
+        #pygame.draw.rect(screen, OBSTACLE_COLOR, obstacle)
+        screen.blit(obstacle_image, (obstacle.x, obstacle.y))
 
 def generate_obstacle():
     obstacle_x = SCREEN_WIDTH
@@ -114,7 +120,8 @@ while running:
                 is_jumping = True
 
     # Clear the screen
-    screen.fill(BG_COLOR)
+    #screen.fill(BG_COLOR)
+    screen.blit(background_image, (0, 0))
 
     if not game_over:
         # Update player position and velocity

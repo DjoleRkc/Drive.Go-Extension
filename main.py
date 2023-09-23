@@ -155,7 +155,7 @@ while running:
         score += 1
 
     # Update the display
-    pygame.display.update()
+    pygame.display.flip() #ovde uklonjen .dispay()
 
     # Cap the frame rate
     clock.tick(30)

@@ -14,14 +14,14 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 600  # Adjust the dimensions to fit a vertic
 PLAYER_WIDTH, PLAYER_HEIGHT = 100, 100
 player_image = pygame.transform.scale(player_image, (PLAYER_WIDTH, PLAYER_HEIGHT))
 
-OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 60, 15
+OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 80, 20
 obstacle_image = pygame.transform.scale(obstacle_image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
 
 BG_COLOR = (255, 255, 255)  # Set background color to white
-GRAVITY = 1.5
-JUMP_FORCE = -15
+GRAVITY = 2
+JUMP_FORCE = -20
 OBSTACLE_SPEED = 8
-OBSTACLE_SPAWN_INTERVAL = 60
+OBSTACLE_SPAWN_INTERVAL = 20
 OBSTACLE_COLOR = (255, 0, 0)  # Change obstacle color to red
 #MAX = 40 #izmeniti da bude customizable
 
@@ -60,6 +60,7 @@ def draw_obstacles():
         #pygame.draw.rect(screen, OBSTACLE_COLOR, obstacle)
         screen.blit(obstacle_image, (obstacle.x, obstacle.y))
 
+
 def generate_obstacle():
     obstacle_x = SCREEN_WIDTH
     obstacle_y = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, player_x + JUMP_FORCE - 1) #ovde dodati----------------------------------
@@ -73,7 +74,9 @@ def check_collision():
     for obstacle in obstacles:
         if (player_x + PLAYER_WIDTH >= obstacle.x and player_x <= obstacle.x + OBSTACLE_WIDTH) and \
            (player_y + PLAYER_HEIGHT >= obstacle.y-10 and player_y <= obstacle.y + OBSTACLE_HEIGHT ) and \
-            player_y+PLAYER_HEIGHT <= obstacle.y+OBSTACLE_HEIGHT+10 and player_y+PLAYER_HEIGHT != SCREEN_HEIGHT: return True
+            player_y+PLAYER_HEIGHT <= obstacle.y+OBSTACLE_HEIGHT+10 and player_y+PLAYER_HEIGHT != SCREEN_HEIGHT: 
+                #player_y = obstacle.y - PLAYER_HEIGHT
+                return obstacle
 
     return False
 
@@ -136,6 +139,7 @@ while running:
 
         # Generate obstacles
         if score % OBSTACLE_SPAWN_INTERVAL == 0:
+            #if random.randint(1, 100) <= 50:
             generate_obstacle()
 
         # Move and draw obstacles
@@ -149,12 +153,18 @@ while running:
         draw_player()        
 
         # Check for collisions
-        if check_collision() and player_velocity_y > 0:
-                player_velocity_y = JUMP_FORCE  # Bounce the player upward
-
+        #if check_collision() and player_velocity_y > 0:
+        #    #player_velocity_y = JUMP_FORCE  # Bounce the player upward
+        #    pass
+        if check_collision():
+            player_y = check_collision().y - PLAYER_HEIGHT
+            player_velocity_y = 0
+            is_jumping = False
+        #else:
+        #    player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
+        #    is_jumping = False
+        #    player_velocity_y = 0
             
-
-
         # Remove off-screen obstacles
         obstacles = [obstacle for obstacle in obstacles if obstacle.x > -OBSTACLE_WIDTH]
 

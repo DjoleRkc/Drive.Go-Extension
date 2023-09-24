@@ -38,6 +38,9 @@ OBSTACLE_COLOR = (255, 0, 0)  # Change obstacle color to red
 global last_generated_obstacle
 last_generated_obstacle = None
 
+firstWalking = True
+fuelFilled = False
+
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jumping Game")
@@ -54,6 +57,7 @@ is_jumping = False
 obstacles = []
 
 # Game over flag
+global game_over
 game_over = False
 
 # Clock to control the frame rate
@@ -61,6 +65,53 @@ clock = pygame.time.Clock()
 
 # Create a font for text rendering
 font = pygame.font.Font(None, 36)
+
+#button properties
+button_width, button_height = 200, 50
+button_x = (SCREEN_WIDTH - button_width) // 2
+button_y = (SCREEN_HEIGHT - button_height) // 2 + 50
+button_color = (0, 0, 255)
+button_text = font.render("Restart Game", True, (255, 255, 255))
+button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+
+
+
+
+# def show_game_over_screen():
+#     global game_over
+#     game_over = True
+#     game_over_text = font.render("Game Over", True, (255, 0, 0))
+#     game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    
+#     while game_over:
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             elif event.type == pygame.MOUSEBUTTONDOWN:
+#                 x, y = event.pos
+#                 if button_rect.collidepoint(x, y):
+#                     # Reset the game
+#                     global obstacles, player_y, player_velocity_y, score
+#                     obstacles = []
+#                     player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
+#                     player_velocity_y = 0
+#                     game_over = False
+#                     score = 0
+                    
+
+#     # Clear the screen
+#     screen.blit(background_image, (0, 0))
+
+#     # Draw game over text
+#     #screen.blit(game_over_text, game_over_rect)
+
+#     # Draw restart button
+#     #pygame.draw.rect(screen, button_color, button_rect)
+#     #screen.blit(button_text, (button_x + 50, button_y + 10))
+
+#     # Update the display
+#     pygame.display.flip()
 
 # Functions
 def draw_player():
@@ -125,6 +176,8 @@ def die():
 
 def show_game_over_screen():
     global game_over
+    global firstWalking
+    global last_generated_obstacle
     game_over = True
     game_over_text = font.render("Game Over", True, (255, 0, 0))
     restart_text = font.render("Restart Game", True, (0, 0, 255))
@@ -146,7 +199,11 @@ def show_game_over_screen():
                     player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
                     player_velocity_y = 0
                     game_over = False
-
+                    firstWalking = True
+                    last_generated_obstacle = None
+                    
+def kuponi():
+    sys.exit()
 
 
 # Game loop
@@ -160,6 +217,9 @@ while running:
             if event.key == pygame.K_SPACE and not is_jumping and not game_over:
                 player_velocity_y = JUMP_FORCE
                 is_jumping = True
+                firstWalking = False
+            elif event.key == pygame.K_ESCAPE:
+                fuelFilled = True
 
     # Clear the screen
     #screen.fill(BG_COLOR)
@@ -204,6 +264,12 @@ while running:
             is_jumping = False
         if obj == False and is_jumping == False:
             player_velocity_y += 1.5
+
+        if(player_y + PLAYER_HEIGHT == SCREEN_HEIGHT and firstWalking == False):
+            if(fuelFilled): #idi na kupone
+                kuponi()
+            else:#retry
+                show_game_over_screen()
 
             
         # Remove off-screen obstacles

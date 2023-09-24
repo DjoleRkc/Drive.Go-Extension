@@ -13,7 +13,7 @@ player_image = pygame.image.load("trci1.png")
 player_images = [pygame.image.load("trci1.png"), pygame.image.load("trci2.png"), pygame.image.load("trci3.png"), pygame.image.load("trci4.png")]
 obstacle_image = pygame.image.load('stepenik.png')
 kupon_images = [pygame.image.load('kafe.png'), pygame.image.load('kartica.png'),pygame.image.load('kroasan.png'),pygame.image.load('sendvici.png'),\
-                pygame.image.load('tocenje.png'),pygame.image.load('ulja.png')]
+                pygame.image.load('tocenje.png'),pygame.image.load('pranje.png'), pygame.image.load('gigatron.png'),pygame.image.load('ulja.png'), pygame.image.load('umbro.png')]
 global curr_imm
 global dir_imm
 curr_imm = 0
@@ -293,6 +293,9 @@ def kuponi():
         "sendvici1.png",
         "tocenje1.png",
         "ulja1.png",
+        "umbro1.png",
+        "gigatron1.png",
+        "pranje1.png"
     ]
     random.shuffle(kupon_paths)
 

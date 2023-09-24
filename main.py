@@ -19,13 +19,12 @@ obstacle_image = pygame.transform.scale(obstacle_image, (OBSTACLE_WIDTH, OBSTACL
 
 BG_COLOR = (255, 255, 255)  # Set background color to white
 GRAVITY = 2
-JUMP_FORCE = -20
+JUMP_FORCE = -25
 OBSTACLE_SPEED = 8
 OBSTACLE_SPAWN_INTERVAL = 20
 OBSTACLE_COLOR = (255, 0, 0)  # Change obstacle color to red
-#MAX = 40 #izmeniti da bude customizable
-
-
+global last_generated_obstacle
+last_generated_obstacle = None
 
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -62,8 +61,26 @@ def draw_obstacles():
 
 
 def generate_obstacle():
+    global last_generated_obstacle
     obstacle_x = SCREEN_WIDTH
-    obstacle_y = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, player_x + JUMP_FORCE - 1) #ovde dodati----------------------------------
+
+    if last_generated_obstacle:
+        tmp = SCREEN_HEIGHT
+        while(tmp > SCREEN_HEIGHT - OBSTACLE_HEIGHT or tmp < 150):
+            tmp = last_generated_obstacle.y - OBSTACLE_HEIGHT - random.randint(-PLAYER_HEIGHT - 30, PLAYER_HEIGHT + 30) 
+    else: tmp = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, PLAYER_HEIGHT + 30)
+
+    #if len(obstacles) > 0:
+        # while(True):
+        #     tmp = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, last_generated_obstacle.y + JUMP_FORCE)
+        #     if(tmp < 2*PLAYER_HEIGHT + last_generated_obstacle.y):
+        #         break
+        #offset = random.randint(obstacles[-1].y - 3*PLAYER_HEIGHT, obstacles[-1].y + 3*PLAYER_HEIGHT)
+        #obstacle_y = obstacles[-1].y + offset
+    #else:
+    
+    obstacle_y = tmp
+    last_generated_obstacle = pygame.Rect(obstacle_x, obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT)
     obstacles.append(pygame.Rect(obstacle_x, obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
 
 def move_obstacles():
@@ -74,9 +91,7 @@ def check_collision():
     for obstacle in obstacles:
         if (player_x + PLAYER_WIDTH >= obstacle.x and player_x <= obstacle.x + OBSTACLE_WIDTH) and \
            (player_y + PLAYER_HEIGHT >= obstacle.y-10 and player_y <= obstacle.y + OBSTACLE_HEIGHT ) and \
-            player_y+PLAYER_HEIGHT <= obstacle.y+OBSTACLE_HEIGHT+10 and player_y+PLAYER_HEIGHT != SCREEN_HEIGHT: 
-                #player_y = obstacle.y - PLAYER_HEIGHT
-                return obstacle
+            player_y+PLAYER_HEIGHT <= obstacle.y+OBSTACLE_HEIGHT+10 and player_y+PLAYER_HEIGHT != SCREEN_HEIGHT: return obstacle
 
     return False
 
@@ -109,6 +124,8 @@ def show_game_over_screen():
                     player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
                     player_velocity_y = 0
                     game_over = False
+
+
 
 # Game loop
 running = True
@@ -156,14 +173,15 @@ while running:
         #if check_collision() and player_velocity_y > 0:
         #    #player_velocity_y = JUMP_FORCE  # Bounce the player upward
         #    pass
-        if check_collision():
-            player_y = check_collision().y - PLAYER_HEIGHT
+
+        obj = check_collision()
+        if(obj):
+            player_y = obj.y - PLAYER_HEIGHT
             player_velocity_y = 0
             is_jumping = False
-        #else:
-        #    player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
-        #    is_jumping = False
-        #    player_velocity_y = 0
+        if obj == False and is_jumping == False:
+            player_velocity_y += 1.5
+
             
         # Remove off-screen obstacles
         obstacles = [obstacle for obstacle in obstacles if obstacle.x > -OBSTACLE_WIDTH]

@@ -7,12 +7,24 @@ pygame.init()
 
 
 # Load the monkey emoji image
-player_image = pygame.image.load("gorila_trci_1.png")
+global player_image
+player_image = pygame.image.load("trci1.png")
+player_images = [pygame.image.load("trci1.png"), pygame.image.load("trci2.png"), pygame.image.load("trci3.png"), pygame.image.load("trci4.png")]
+obstacle_image = pygame.image.load('stepenik.png')
+global curr_imm
+global dir_imm
+curr_imm = 0
+dir_imm = 1
 obstacle_image = pygame.image.load('stepenik.png')
 # Constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 600  # Adjust the dimensions to fit a vertical phone shape
 PLAYER_WIDTH, PLAYER_HEIGHT = 100, 100
 player_image = pygame.transform.scale(player_image, (PLAYER_WIDTH, PLAYER_HEIGHT))
+
+player_images[0] = pygame.transform.scale(player_images[0], (PLAYER_WIDTH, PLAYER_HEIGHT))
+player_images[1] = pygame.transform.scale(player_images[1], (PLAYER_WIDTH, PLAYER_HEIGHT+20))
+player_images[2] = pygame.transform.scale(player_images[2], (PLAYER_WIDTH, PLAYER_HEIGHT+20))
+player_images[3] = pygame.transform.scale(player_images[3], (PLAYER_WIDTH, PLAYER_HEIGHT+20))
 
 OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 80, 20
 obstacle_image = pygame.transform.scale(obstacle_image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
@@ -87,6 +99,16 @@ def move_obstacles():
     for obstacle in obstacles:
         obstacle.x -= OBSTACLE_SPEED
 
+def move_player():
+    global player_image
+    global curr_imm
+    global dir_imm
+    if score % 6 == 0:
+        player_image = player_images[curr_imm + dir_imm]
+        curr_imm = curr_imm + dir_imm
+        if curr_imm == len(player_images) - 1 : dir_imm = -1
+        elif curr_imm == 0 : dir_imm = 1
+
 def check_collision():
     for obstacle in obstacles:
         if (player_x + PLAYER_WIDTH >= obstacle.x and player_x <= obstacle.x + OBSTACLE_WIDTH) and \
@@ -144,6 +166,7 @@ while running:
     screen.blit(background_image, (0, 0))
 
     if not game_over:
+        move_player()
         # Update player position and velocity
         player_y += player_velocity_y
         player_velocity_y += GRAVITY

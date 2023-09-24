@@ -11,6 +11,7 @@ global player_image
 player_image = pygame.image.load("trci1.png")
 player_images = [pygame.image.load("trci1.png"), pygame.image.load("trci2.png"), pygame.image.load("trci3.png"), pygame.image.load("trci4.png")]
 obstacle_image = pygame.image.load('stepenik.png')
+kupon_image = pygame.image.load('fr2.png')
 global curr_imm
 global dir_imm
 curr_imm = 0
@@ -27,7 +28,9 @@ player_images[2] = pygame.transform.scale(player_images[2], (PLAYER_WIDTH, PLAYE
 player_images[3] = pygame.transform.scale(player_images[3], (PLAYER_WIDTH, PLAYER_HEIGHT+20))
 
 OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 80, 20
+KUPON_WIDTH, KUPON_HEIGHT = 50, 35
 obstacle_image = pygame.transform.scale(obstacle_image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+kupon_image = pygame.transform.scale(kupon_image, (KUPON_WIDTH, KUPON_HEIGHT))
 
 BG_COLOR = (255, 255, 255)  # Set background color to white
 GRAVITY = 2
@@ -55,6 +58,8 @@ is_jumping = False
 
 # Obstacles
 obstacles = []
+coupons = []
+#collected_couponb
 
 # Game over flag
 global game_over
@@ -76,43 +81,6 @@ button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
 
 
 
-
-# def show_game_over_screen():
-#     global game_over
-#     game_over = True
-#     game_over_text = font.render("Game Over", True, (255, 0, 0))
-#     game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    
-#     while game_over:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#                 sys.exit()
-#             elif event.type == pygame.MOUSEBUTTONDOWN:
-#                 x, y = event.pos
-#                 if button_rect.collidepoint(x, y):
-#                     # Reset the game
-#                     global obstacles, player_y, player_velocity_y, score
-#                     obstacles = []
-#                     player_y = SCREEN_HEIGHT - PLAYER_HEIGHT
-#                     player_velocity_y = 0
-#                     game_over = False
-#                     score = 0
-                    
-
-#     # Clear the screen
-#     screen.blit(background_image, (0, 0))
-
-#     # Draw game over text
-#     #screen.blit(game_over_text, game_over_rect)
-
-#     # Draw restart button
-#     #pygame.draw.rect(screen, button_color, button_rect)
-#     #screen.blit(button_text, (button_x + 50, button_y + 10))
-
-#     # Update the display
-#     pygame.display.flip()
-
 # Functions
 def draw_player():
     screen.blit(player_image, (player_x, player_y))
@@ -121,6 +89,8 @@ def draw_obstacles():
     for obstacle in obstacles:
         #pygame.draw.rect(screen, OBSTACLE_COLOR, obstacle)
         screen.blit(obstacle_image, (obstacle.x, obstacle.y))
+    for coupon in coupons:
+        screen.blit(kupon_image, (coupon.x, coupon.y))
 
 
 def generate_obstacle():
@@ -131,24 +101,25 @@ def generate_obstacle():
         tmp = SCREEN_HEIGHT
         while(tmp > SCREEN_HEIGHT - OBSTACLE_HEIGHT or tmp < 150):
             tmp = last_generated_obstacle.y - OBSTACLE_HEIGHT - random.randint(-PLAYER_HEIGHT - 30, PLAYER_HEIGHT + 30) 
-    else: tmp = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, PLAYER_HEIGHT + 30)
-
-    #if len(obstacles) > 0:
-        # while(True):
-        #     tmp = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, last_generated_obstacle.y + JUMP_FORCE)
-        #     if(tmp < 2*PLAYER_HEIGHT + last_generated_obstacle.y):
-        #         break
-        #offset = random.randint(obstacles[-1].y - 3*PLAYER_HEIGHT, obstacles[-1].y + 3*PLAYER_HEIGHT)
-        #obstacle_y = obstacles[-1].y + offset
-    #else:
+    else:
+        tmp = SCREEN_HEIGHT - OBSTACLE_HEIGHT - random.randint(0, PLAYER_HEIGHT + 30)
     
     obstacle_y = tmp
     last_generated_obstacle = pygame.Rect(obstacle_x, obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT)
-    obstacles.append(pygame.Rect(obstacle_x, obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+    obstacles.append(pygame.Rect(obstacle_x - (OBSTACLE_WIDTH/2) + (KUPON_WIDTH/2), obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+
+    #deo za kupone:
+
+    if random.randint(1, 100) <= 7:
+        #print('milionerea')
+        coupons.append(pygame.Rect(obstacle_x, obstacle_y - KUPON_HEIGHT - 10, KUPON_WIDTH, KUPON_HEIGHT))
+
 
 def move_obstacles():
     for obstacle in obstacles:
         obstacle.x -= OBSTACLE_SPEED
+    for coupon in coupons:
+        coupon.x -= OBSTACLE_SPEED
 
 def move_player():
     global player_image
